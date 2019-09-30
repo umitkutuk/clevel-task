@@ -12,7 +12,8 @@ class Note extends Model
     	'name', 'content'
     ];
 
-    public function tags() {
-    	return $this->belongsToMany(Tag::class, 'notes_tags');
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 }

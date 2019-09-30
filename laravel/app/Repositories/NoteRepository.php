@@ -94,7 +94,7 @@ class NoteRepository implements NoteInterface
         $validator = Validator::make($request,[
             'name'      => 'bail|required|string|min:3|max:50',
             'content'   => 'required',
-            'tags.*'    => 'required|numeric|min:1',
+            'tags.*'    => 'required|string|min:1',
         ],[
             'name.required'     => 'name alanının doldurulması gerekmektedir.',
             'name.min'          => 'name alanı en az :min karakter olmalıdır.',
@@ -115,7 +115,19 @@ class NoteRepository implements NoteInterface
             ]);
 
             if (isset($request['tags']))
-                $note->tags()->sync($request['tags']);
+            {
+                $tags = [];
+                foreach($request['tags'] as $tag)
+                {
+                    $tagData = Tag::updateOrCreate([
+                        'name' => $tag
+                    ]);
+                    $tags[] = $tagData->id;
+                }
+
+                $note->tags()->sync($tags);
+
+            }
 
             return $note;
         }catch(\Exception $e){
@@ -134,7 +146,7 @@ class NoteRepository implements NoteInterface
         $validator = Validator::make($request,[
             'name'      => 'bail|required|string|min:3|max:50',
             'content'   => 'required',
-            'tags.*'    => 'required|numeric|min:1',
+            'tags.*'    => 'required|string|min:1',
         ],[
             'name.required'     => 'name alanının doldurulması gerekmektedir.',
             'name.min'          => 'name alanı en az :min karakter olmalıdır.',
@@ -162,11 +174,23 @@ class NoteRepository implements NoteInterface
             ]);
 
             if (isset($request['tags']))
-                $note->tags()->sync($request['tags']);
+            {
+                $tags = [];
+                foreach($request['tags'] as $tag)
+                {
+                    $tagData = Tag::updateOrCreate([
+                        'name' => $tag
+                    ]);
+                    $tags[] = $tagData->id;
+                }
+
+                $note->tags()->sync($tags);
+
+            }
 
             Cache::forget('note_'.$id);
             return Cache::remember('note_'.$id, 30, function() use ($note){
-                return $note;
+                return $this->findById($note->id);
             });
         }catch(\Exception $e){
             return response()->json(['status' => 'error', 'reason' => $e->getMessage()]);

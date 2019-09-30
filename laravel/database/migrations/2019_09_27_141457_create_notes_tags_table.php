@@ -13,14 +13,10 @@ class CreateNotesTagsTable extends Migration
      */
     public function up()
     {
-        Schema::create('notes_tags', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->unsignedBigInteger('note_id');
-            $table->unsignedBigInteger('tag_id');
-            $table->foreign('note_id')->references('id')
-                ->on('notes')->onDelete('cascade');
-            $table->foreign('tag_id')->references('id')
-                ->on('tags')->onDelete('cascade');
+        Schema::create('taggables', function (Blueprint $table) {
+            $table->bigInteger('tag_id');
+            $table->bigInteger('taggable_id');
+            $table->string('taggable_type');
         });
     }
 
@@ -31,6 +27,11 @@ class CreateNotesTagsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('notes_tags');
+        if (Schema::hasTable('notes_tags'))
+        {
+            Schema::dropIfExists('notes_tags');
+        }
+
+        Schema::dropIfExists('taggables');
     }
 }
