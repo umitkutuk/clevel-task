@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Model\{Note, Tag};
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\{Cache,Validator};
+use Illuminate\Support\Facades\{Cache, DB, Validator};
 use App\Repositories\Interfaces\NoteInterface;
 
 
@@ -66,10 +66,12 @@ class NoteRepository implements NoteInterface
     }
 
     /**
+     * @deprecated many to many ilişkisi için artık kullanımda değil
      * @return Tag
      */
     public function create()
     {
+        /*
         try{
             if(config('app.cache_is_active')){
                 return Cache::remember('tags', 30, function(){
@@ -80,7 +82,7 @@ class NoteRepository implements NoteInterface
             }
         }catch(\Exception $e){
             return response()->json(['status' => 'error', 'reason' => $e->getMessage()]);
-        }
+        }*/
 
 
     }
@@ -187,11 +189,15 @@ class NoteRepository implements NoteInterface
                 $note->tags()->sync($tags);
 
             }
-
-            Cache::forget('note_'.$id);
-            return Cache::remember('note_'.$id, 30, function() use ($note){
+            if(config('app.cache_is_active')){
+                Cache::forget('note_'.$id);
+                return Cache::remember('note_'.$id, 30, function() use ($note){
+                    return $this->findById($note->id);
+                });
+            }else{
                 return $this->findById($note->id);
-            });
+            }
+
         }catch(\Exception $e){
             return response()->json(['status' => 'error', 'reason' => $e->getMessage()]);
         }
@@ -199,12 +205,15 @@ class NoteRepository implements NoteInterface
     }
 
     /**
+     * @deprecated many to many ilişisinden dolayı kullanım dışı
      * @param int $id
      * @return mixed
      */
     public function edit(int $id)
     {
+        /*
         try{
+
             $note = Cache::remember('note_'.$id, 30, function() use ($id){
                 return Note::with('tags')->find($id);
             });
@@ -221,6 +230,7 @@ class NoteRepository implements NoteInterface
         }catch(\Exception $e){
             return response()->json(['status' => 'error', 'reason' => $e->getMessage()]);
         }
+        */
     }
 
     /**
@@ -232,13 +242,16 @@ class NoteRepository implements NoteInterface
         try{
             $note = Note::find($id);
 
-            Cache::forget('note_'.$id);
+            if(config('app.cache_is_active')){
+                Cache::forget('note_'.$id);
+            }
 
             if(! $note)
             {
                 return response()->json(['statu' => false, 'message' => 'No result']);
             }
 
+            DB::table('taggables')->where('taggable_id', $note->id)->delete();
             return $note->delete();
         }catch(\Exception $e){
             return response()->json(['status' => 'error', 'reason' => $e->getMessage()]);

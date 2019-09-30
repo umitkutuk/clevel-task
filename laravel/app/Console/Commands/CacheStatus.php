@@ -44,10 +44,18 @@ class CacheStatus extends Command
                 if ($this->confirm('Do you wish to continue? [yes|no]')) {
                     $path = base_path('.env');
                     $cache_is_active = $this->laravel['config']['app.cache_is_active'] ? 'true' : 'false';
+                    $cache_driver = $this->laravel['config']['cache.default'];
+                    $cache_driver_replace = $this->argument('statu') == 'true' ? 'redis' : 'file';
                     if (file_exists($path)) {
                         file_put_contents($path, str_replace(
                             'CACHE_IS_ACTIVE='.$cache_is_active,
                             'CACHE_IS_ACTIVE='.$this->argument('statu'),
+                            file_get_contents($path)
+                        ));
+
+                        file_put_contents($path, str_replace(
+                            'CACHE_DRIVER='.$cache_driver,
+                            'CACHE_DRIVER='.$cache_driver_replace,
                             file_get_contents($path)
                         ));
                     }
