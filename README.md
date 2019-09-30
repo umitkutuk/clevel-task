@@ -81,10 +81,8 @@ Notları listelemek için kullanabileceğiniz api adresidir. İsterseniz bu alan
 ```
 
      
-2- [GET|HEAD]      {api_adresi}/note/create
-Not oluştururken tag alanı zorunlu alandır bundan dolayı ilk önce tagları çekmeniz gerekecektir.
 
-3- [POST]          {api_adresi}/note
+2- [POST]          {api_adresi}/note
 Yeni bir not yaratmak için kullanacağınız url 'dir. 
 
 Alanlar ve Açıklamaları
@@ -99,10 +97,10 @@ tags: required|numeric|array
 tags[] = [1,2,3]
 ```
 
-4- [GET|HEAD]      {api_adresi}/note/{note}
+3- [GET|HEAD]      {api_adresi}/note/{note}
 İstemiş olduğunuz notun id numarasını göndererek ilişkili olduğu tags lar ile birlikte alabilirsiniz.
       
-5- [GET|HEAD]      {api_adresi}/note/{note}/edit
+4- [GET|HEAD]      {api_adresi}/note/{note}/edit
       
 Güncellemek istediğiniz notu id numarası ile göndererek ilgili not ve ona ait tagları cekebilirsiniz.
 
@@ -114,7 +112,7 @@ JSON objesinde gelen verinin içerisinde tags verileri de mevcuttur.
       ]
 ```
 
-6- [PUT]           {api_adresi}/note/{note}
+5- [PUT]           {api_adresi}/note/{note}
 Bir notu güncellemek için kullanacağınız url 'dir.
 
 ```
@@ -128,7 +126,7 @@ tags: required|numeric|array
 tags[] = [1,2,3]
 ```
 
-8- [DELETE]        {api_adresi}/note/{note}
+6- [DELETE]        {api_adresi}/note/{note}
 İstediğiniz notu bu url i kullanarak silebilirsiniz.  
 ```
 {note} => required|numeric
